@@ -1389,40 +1389,44 @@ get_bandwidth()
 
     local bandwidth
     [ -z "$bandwidth_num" ] && return
-    case $network_type in
-		"LTE")
-            case $bandwidth_num in
-                "0") bandwidth="1.4" ;;
-                "1") bandwidth="3" ;;
-                "2") bandwidth="5" ;;
-                "3") bandwidth="10" ;;
-                "4") bandwidth="15" ;;
-                "5") bandwidth="20" ;;
-                "6") bandwidth="1.4" ;;
-                "15"|"25"|"50"|"75"|"100") bandwidth=$((bandwidth_num / 5)) ;;
-                *) bandwidth="$bandwidth_num" ;;
-            esac
-        ;;
-        "NR")
-            case $bandwidth_num in
-                "0") bandwidth="5" ;;
-                "1") bandwidth="10" ;;
-                "2") bandwidth="15" ;;
-                "3") bandwidth="20" ;;
-                "4") bandwidth="25" ;;
-                "5") bandwidth="30" ;;
-                "6") bandwidth="40" ;;
-                "7") bandwidth="50" ;;
-                "8") bandwidth="60" ;;
-                "9") bandwidth="70" ;;
-                "10") bandwidth="80" ;;
-                "11") bandwidth="90" ;;
-                "12") bandwidth="100" ;;
-                "25"|"50"|"75"|"100"|"125"|"150"|"200"|"250"|"300"|"400"|"500") bandwidth=$((bandwidth_num / 5)) ;;
-                *) bandwidth="$bandwidth_num" ;;
-            esac
-        ;;
-	esac
+
+    # 大于 14 的值视为直接 MHz 数值（FM170-EAU 等模组）
+    if fibocom_is_uint "$bandwidth_num" && [ "$bandwidth_num" -gt 14 ]; then
+        bandwidth="$bandwidth_num"
+    else
+        case $network_type in
+            "LTE")
+                case $bandwidth_num in
+                    "0") bandwidth="1.4" ;;
+                    "1") bandwidth="3" ;;
+                    "2") bandwidth="5" ;;
+                    "3") bandwidth="10" ;;
+                    "4") bandwidth="15" ;;
+                    "5") bandwidth="20" ;;
+                    "6") bandwidth="1.4" ;;
+                    *) bandwidth="$bandwidth_num" ;;
+                esac
+            ;;
+            "NR")
+                case $bandwidth_num in
+                    "0") bandwidth="5" ;;
+                    "1") bandwidth="10" ;;
+                    "2") bandwidth="15" ;;
+                    "3") bandwidth="20" ;;
+                    "4") bandwidth="25" ;;
+                    "5") bandwidth="30" ;;
+                    "6") bandwidth="40" ;;
+                    "7") bandwidth="50" ;;
+                    "8") bandwidth="60" ;;
+                    "9") bandwidth="70" ;;
+                    "10") bandwidth="80" ;;
+                    "11") bandwidth="90" ;;
+                    "12") bandwidth="100" ;;
+                    *) bandwidth="$bandwidth_num" ;;
+                esac
+            ;;
+        esac
+    fi
     echo "$bandwidth"
 }
 
